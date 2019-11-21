@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+
+  mysql:
+    container_name: "${PROJECT_KEY}-mysql"
+    restart: always
+    volumes:
+      - ./_ops/docker/mysql/initdb:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: source
+      MYSQL_INITDB_SKIP_TZINFO: "yes"
+    networks:
+      backend:
+        ipv4_address: "${DEV_SUBNET_PREFIX}.8"
+        aliases:
+          - mysql
+
+  adminer:
+    container_name: "${PROJECT_KEY}-adminer"
+    restart: always
+    networks:
+      backend:
+        ipv4_address: "${DEV_SUBNET_PREFIX}.9"
+        aliases:
+          - adminer
+
+networks:
+  backend:
+    name: "${PROJECT_KEY}-backend"
+    external: false
+    ipam:
+      config:
+        - subnet: "${DEV_SUBNET_PREFIX}.0/24"
